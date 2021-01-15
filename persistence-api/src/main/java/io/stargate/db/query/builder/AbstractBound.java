@@ -8,6 +8,9 @@ import io.stargate.db.query.AsyncQueryExecutor;
 import io.stargate.db.query.BoundQuery;
 import io.stargate.db.query.QueryType;
 import io.stargate.db.query.TypedValue;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
@@ -71,6 +74,20 @@ public class AbstractBound<Q extends BuiltQuery<?>> implements BoundQuery {
    * <p>See the {@link AsyncQueryExecutor#execute(BoundQuery, UnaryOperator)}.
    */
   public CompletableFuture<ResultSet> execute(UnaryOperator<Parameters> parametersModifier) {
-    return executor().execute(this, parametersModifier);
+    double rando = Math.random();
+    final Instant x = Instant.now().truncatedTo(ChronoUnit.MICROS);
+    CompletableFuture<ResultSet> y =
+        executor()
+            .execute(this, parametersModifier)
+            .thenApply(
+                rs -> {
+                  if (rando > 0.8) {
+                    System.out.println(
+                        "Query took "
+                            + Duration.between(x, Instant.now().truncatedTo(ChronoUnit.MICROS)));
+                  }
+                  return rs;
+                });
+    return y;
   }
 }

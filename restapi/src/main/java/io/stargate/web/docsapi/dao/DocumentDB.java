@@ -319,15 +319,17 @@ public class DocumentDB {
   public ResultSet executeSelect(
       String keyspace, String collection, List<BuiltCondition> predicates)
       throws ExecutionException, InterruptedException {
-    return this.builder()
-        .select()
-        .column(DocumentDB.allColumns())
-        .writeTimeColumn("leaf")
-        .from(keyspace, collection)
-        .where(predicates)
-        .build()
-        .execute()
-        .join();
+    ResultSet rs =
+        this.builder()
+            .select()
+            .column(DocumentDB.allColumns())
+            .writeTimeColumn("leaf")
+            .from(keyspace, collection)
+            .where(predicates)
+            .build()
+            .execute()
+            .join();
+    return rs;
   }
 
   public ResultSet executeSelect(
